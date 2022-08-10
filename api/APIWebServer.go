@@ -25,10 +25,6 @@ func (webserver *WebServer) Start(address string) error {
 	return nil
 }
 
-func (webserver *WebServer) Stop() {
-	webserver.httpServer.Close()
-}
-
 func (webserver *WebServer) RegisterPaths() {
 	webserver.serveMux.HandleFunc("/internetconnection", routes.VerifyInternetRouteHandler)
 }
