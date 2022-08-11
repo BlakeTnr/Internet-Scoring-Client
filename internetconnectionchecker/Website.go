@@ -2,7 +2,6 @@ package internetchecker
 
 import (
 	"fmt"
-	"isc/database"
 	"math/rand"
 	"net/http"
 	"time"
@@ -14,6 +13,7 @@ type Website struct {
 
 func RandomWebsite() Website {
 	rand.Seed(time.Now().UnixNano())
+	database := GetWebsiteDatabase()
 	numberOfWebsites := database.GetNumberOfWebsites()
 	randomIndex := rand.Intn(numberOfWebsites)
 	domain := database.GetDomainByIndex(randomIndex)

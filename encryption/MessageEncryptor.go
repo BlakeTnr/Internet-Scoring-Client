@@ -8,10 +8,10 @@ import (
 )
 
 type MessageEncryptor struct {
-	PublicKey rsa.PublicKey
+	KeyDatabase IKeyDatabase
 }
 
-func (messageEncryptor *MessageEncryptor) EncryptMessage(message string, label string) string {
+func (messageEncryptor MessageEncryptor) EncryptMessage(message string, label string) string {
 	messageBytes := []byte(message)
 	labelBytes := []byte(label)
 	encryptedBytes := messageEncryptor.EncryptBytes(messageBytes, labelBytes)
@@ -19,19 +19,21 @@ func (messageEncryptor *MessageEncryptor) EncryptMessage(message string, label s
 	return encryptedString
 }
 
-func (messageEncryptor *MessageEncryptor) EncryptBytes(message []byte, label []byte) []byte {
-	encryptedBytes, _ := rsa.EncryptOAEP(sha256.New(), rand.Reader, &messageEncryptor.PublicKey, message, label)
+func (messageEncryptor MessageEncryptor) EncryptBytes(message []byte, label []byte) []byte {
+	publicKey := messageEncryptor.KeyDatabase.GetPublicKey()
+	encryptedBytes, _ := rsa.EncryptOAEP(sha256.New(), rand.Reader, &publicKey, message, label)
 	return encryptedBytes
 }
 
-func (messageEncryptor *MessageEncryptor) DecryptMessage(message string, label string, privateKey rsa.PrivateKey) string {
+func (messageEncryptor MessageEncryptor) DecryptMessage(message string, label string) string {
 	encryptedBytes, _ := base64.StdEncoding.DecodeString(message)
-	decryptedBytes := messageEncryptor.DecryptBytes(encryptedBytes, []byte(label), privateKey)
+	decryptedBytes := messageEncryptor.DecryptBytes(encryptedBytes, []byte(label))
 	decryptedString := string(decryptedBytes)
 	return decryptedString
 }
 
-func (messageEncryptor *MessageEncryptor) DecryptBytes(message []byte, label []byte, privateKey rsa.PrivateKey) []byte {
+func (messageEncryptor MessageEncryptor) DecryptBytes(message []byte, label []byte) []byte {
+	privateKey := messageEncryptor.KeyDatabase.GetPrivateKey()
 	decryptedBytes, _ := rsa.DecryptOAEP(sha256.New(), rand.Reader, &privateKey, message, label)
 	return decryptedBytes
 }

@@ -18,8 +18,9 @@ func VerifyInternetRouteHandler(writer http.ResponseWriter, request *http.Reques
 		attempts = 2
 	}
 
-	result := internet.VerifyInternetConnection(attempts)
-	messageEncryptor := encryption.MessageEncryptor{database.GetPublicKey()}
+	database := database.KeyDatabase{}
+	result := internet.VerifyInternetConnection(attempts)                  // possible open-closed principle architecture violation
+	messageEncryptor := encryption.MessageEncryptor{KeyDatabase: database} // possible open-closed principle architecture violation
 	encryptedMessage := messageEncryptor.EncryptMessage(strconv.FormatBool(result), "")
 	fmt.Fprintf(writer, encryptedMessage)
 }

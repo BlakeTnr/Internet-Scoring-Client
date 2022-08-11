@@ -7,13 +7,16 @@ import (
 	"encoding/pem"
 )
 
+type KeyDatabase struct {
+}
+
 //go:embed publickey.txt
 var publicKey string
 
 //go:embed privatekey.txt
 var privateKey string
 
-func GetPublicKey() rsa.PublicKey { // This file should only handle getting the file, probably not converting
+func (keyDatabase KeyDatabase) GetPublicKey() rsa.PublicKey { // This file should only handle getting the file, probably not converting
 	publicKeyBytes := []byte(publicKey)
 	block, _ := pem.Decode(publicKeyBytes)
 	pub, _ := x509.ParsePKIXPublicKey(block.Bytes)
@@ -21,7 +24,7 @@ func GetPublicKey() rsa.PublicKey { // This file should only handle getting the 
 	return *rsaPubKey
 }
 
-func GetPrivateKey() rsa.PrivateKey { // This file should only handle getting the file, probably not converting
+func (keyDatabase KeyDatabase) GetPrivateKey() rsa.PrivateKey { // This file should only handle getting the file, probably not converting
 	privateKeyBytes := []byte(privateKey)
 	block, _ := pem.Decode(privateKeyBytes)
 	pub, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
